@@ -1,0 +1,13 @@
+// create a topic
+docker exec -it order-service-kafka-1 kafka-topics --create --topic order-completed --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+docker exec -it order-service-kafka-1 kafka-topics --create --topic order-created --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+docker exec -it order-service-kafka-1 kafka-topics --create --topic order-cancelled --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+
+
+// publish a message
+docker exec -it order-service-kafka-1 kafka-console-producer --topic order-completed --bootstrap-server localhost:9092
+
+// consumes a message
+docker exec -it order-service-kafka-1 kafka-console-consumer --topic order-completed --from-beginning --bootstrap-server localhost:9092
+
+
