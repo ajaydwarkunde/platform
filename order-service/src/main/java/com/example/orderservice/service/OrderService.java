@@ -2,18 +2,20 @@ package com.example.orderservice.service;
 
 import com.example.orderservice.dto.CreateOrderRequest;
 import com.example.orderservice.events.KafkaEventPublisher;
-import com.example.orderservice.events.OrderCancelledEvent;
-import com.example.orderservice.events.OrderCompletedEvent;
-import com.example.orderservice.events.OrderCreatedEvent;
+import com.example.events.OrderCancelledEvent;
+import com.example.events.OrderCompletedEvent;
+import com.example.events.OrderCreatedEvent;
 import com.example.orderservice.model.Order;
 import com.example.orderservice.model.OrderStatus;
 import com.example.orderservice.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OrderService {
@@ -32,7 +34,7 @@ public class OrderService {
                 .build();
 
         Order savedOrder = orderRepository.save(order);
-
+        log.info("order saved in repository");
         kafkaEventPublisher.publish(
                 "order-created",
                 new OrderCreatedEvent(
@@ -40,7 +42,7 @@ public class OrderService {
                         savedOrder.getCustomerId()
                 )
         );
-
+        log.info("order pushed in kafka");
         return savedOrder;
 
     }

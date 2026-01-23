@@ -1,29 +1,21 @@
 package com.example.events;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class OrderCancelledEvent implements DomainEvent {
 
     private String orderId;
     private String reason;
     private LocalDateTime occurredAt;
 
-    // Required by Jackson
-    public OrderCancelledEvent() {
-    }
-
-    public OrderCancelledEvent(String orderId, String reason) {
-        this.orderId = orderId;
-        this.reason = reason;
-        this.occurredAt = LocalDateTime.now();
-    }
-
-    public String getOrderId() {
-        return orderId;
-    }
-
-    public String getReason() {
-        return reason;
+    public OrderCancelledEvent(String id, String cancelledByUser) {
     }
 
     @Override

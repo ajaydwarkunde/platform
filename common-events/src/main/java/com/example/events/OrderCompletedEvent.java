@@ -1,23 +1,20 @@
 package com.example.events;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 
+@Data
+@NoArgsConstructor
 public class OrderCompletedEvent implements DomainEvent {
 
     private String orderId;
     private LocalDateTime occurredAt;
 
-    // Required by Jackson
-    public OrderCompletedEvent() {
-    }
-
     public OrderCompletedEvent(String orderId) {
         this.orderId = orderId;
         this.occurredAt = LocalDateTime.now();
-    }
-
-    public String getOrderId() {
-        return orderId;
     }
 
     @Override

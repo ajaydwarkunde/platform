@@ -1,5 +1,5 @@
 // create a topic
-docker exec -it order-service-kafka-1 kafka-topics --create --topic order-completed --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+docker exec -it platform- kafka-topics --create --topic order-completed --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
 docker exec -it order-service-kafka-1 kafka-topics --create --topic order-created --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
 docker exec -it order-service-kafka-1 kafka-topics --create --topic order-cancelled --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
 
@@ -10,4 +10,42 @@ docker exec -it order-service-kafka-1 kafka-console-producer --topic order-compl
 // consumes a message
 docker exec -it order-service-kafka-1 kafka-console-consumer --topic order-completed --from-beginning --bootstrap-server localhost:9092
 
+// list topics
+docker exec -it kafka kafka-topics --bootstrap-server kafka:29092  --list
 
+docker exec -it kafka kafka-console-producer --bootstrap-server kafka:29092 --topic order-created
+docker exec -it kafka kafka-console-consumer --topic order-created --from-beginning --bootstrap-server localhost:9092
+
+//
+docker compose down -v
+docker build -t order-service -f order-service/Dockerfile .
+docker build -t payment-service -f payment-service/Dockerfile .
+docker build -t notification-service -f notification-service/Dockerfile .
+docker compose up -d
+-----------------
+docker compose down -v
+docker compose up -d --build
+
+//
+docker exec -it kafka kafka-topics --create --topic payment-completed --bootstrap-server kafka:29092 --partitions 1 --replication-factor 1
+
+docker exec -it kafka kafka-topics --create --topic payment-failed --bootstrap-server kafka:29092 --partitions 1 --replication-factor 1
+
+// cleanup
+docker exec -it kafka kafka-topics --bootstrap-server kafka:29092 --delete --topic order-created
+docker exec -it kafka kafka-topics --bootstrap-server kafka:29092 --delete --topic payment-completed
+docker exec -it kafka kafka-topics --bootstrap-server kafka:29092 --delete --topic payment-failed
+
+docker exec -it kafka kafka-console-consumer --topic payment-completed  --bootstrap-server kafka:29092  --from-beginning --property print.headers=true
+docker exec -it kafka kafka-console-consumer --topic payment-created  --bootstrap-server kafka:29092  --from-beginning --property print.headers=true
+docker exec -it kafka kafka-console-consumer --topic order-created --bootstrap-server kafka:29092 --from-beginning --property print.headers=true
+
+//
+docker compose down
+docker compose up -d --build payment-service
+docker compose up -d --build notification-service
+docker compose up -d --build order-service
+docker compose up -d --build
+
+//
+docker exec -it kafka kafka-topics --bootstrap-server kafka:29092 --describe --topic payment-completed
